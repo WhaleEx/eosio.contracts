@@ -51,6 +51,20 @@
         {"name":"symbol", "type":"symbol"}
      ]
   },{
+       "name": "addblacklist",
+       "base": "",
+       "fields": [
+          {"name":"account", "type":"account_name"},
+          {"name":"symbol", "type":"symbol"}
+       ]
+  },{
+       "name": "rmblacklist",
+       "base": "",
+       "fields": [
+          {"name":"account", "type":"account_name"},
+          {"name":"symbol", "type":"symbol"}
+       ]
+  },{
       "name": "account",
       "base": "",
       "fields": [
@@ -63,6 +77,12 @@
         {"name":"supply", "type":"asset"},
         {"name":"max_supply", "type":"asset"},
         {"name":"issuer", "type":"account_name"}
+      ]
+  },{
+      "name": "blacklist",
+      "base": "",
+      "fields": [
+        {"name":"account", "type":"account_name"}
       ]
     }
   ],
@@ -90,6 +110,14 @@
       "name": "close",
       "type": "close",
       "ricardian_contract": ""
+    }, {
+      "name": "addblacklist",
+      "type": "addblacklist",
+      "ricardian_contract": ""
+    }, {
+      "name": "rmblacklist",
+      "type": "rmblacklist",
+      "ricardian_contract": ""
     }
 
   ],
@@ -104,6 +132,12 @@
       "type": "currency_stats",
       "index_type": "i64",
       "key_names" : ["currency"],
+      "key_types" : ["uint64"]
+    },{
+      "name": "blacklist",
+      "type": "blacklist",
+      "index_type": "i64",
+      "key_names" : ["account"],
       "key_types" : ["uint64"]
     }
   ],

@@ -93,6 +93,11 @@ void token::transfer( account_name from,
     require_auth( from );
     eosio_assert( is_account( to ), "to account does not exist");
     auto sym = quantity.symbol.name();
+
+    blacklists blacklists( _self, sym );
+    auto it = blacklists.find( to );
+    eosio_assert( it == blacklists.end(), "to account is in blacklist" );
+
     stats statstable( _self, sym );
     const auto& st = statstable.get( sym );
 
@@ -158,6 +163,38 @@ void token::close( account_name owner, symbol_type symbol )
    acnts.erase( it );
 }
 
+void token::addblacklist( account_name account, symbol_type symbol ) {
+   auto sym_name = symbol.name();
+   stats statstable( _self, sym_name );
+   auto existing = statstable.find( sym_name );
+   eosio_assert( existing != statstable.end(), "token with symbol does not exist, create token before add to black list" );
+   const auto& st = *existing;
+
+   require_auth( st.issuer );
+   eosio_assert( symbol == st.supply.symbol, "symbol precision mismatch" );
+   eosio_assert( is_account(account), "account does not exist" );
+   blacklists blacklists( _self, sym_name );
+   blacklists.emplace( _self, [&]( auto &b ) {
+      b.account = account;
+   });
+
+}
+
+void token::rmblacklist( account_name account, symbol_type symbol ) {
+   auto sym_name = symbol.name();
+   stats statstable( _self, sym_name );
+   auto existing = statstable.find( sym_name );
+   eosio_assert( existing != statstable.end(), "token with symbol does not exist, create token before remove from black list" );
+   const auto& st = *existing;
+
+   require_auth( st.issuer );
+   eosio_assert( symbol == st.supply.symbol, "symbol precision mismatch" );
+   blacklists blacklists( _self, sym_name );
+   auto it = blacklists.find( account );
+   eosio_assert( it != blacklists.end(), "Blacklist row already deleted or never existed. Action won't have any effect." );
+   blacklists.erase( it );
+}
+
 } /// namespace eosio
 
-EOSIO_ABI( eosio::token, (create)(issue)(transfer)(open)(close)(retire) )
+EOSIO_ABI( eosio::token, (create)(issue)(transfer)(open)(close)(retire)(addblacklist)(rmblacklist) )

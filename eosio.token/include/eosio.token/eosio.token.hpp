@@ -37,6 +37,10 @@ namespace eosio {
 
          void close( account_name owner, symbol_type symbol );
 
+         void addblacklist( account_name account, symbol_type symbol );
+
+         void rmblacklist( account_name account, symbol_type symbol );
+
          inline asset get_supply( symbol_name sym )const;
 
          inline asset get_balance( account_name owner, symbol_name sym )const;
@@ -56,8 +60,15 @@ namespace eosio {
             uint64_t primary_key()const { return supply.symbol.name(); }
          };
 
+         struct blacklist {
+            account_name account;
+
+            uint64_t primary_key()const { return account; }
+         };
+
          typedef eosio::multi_index<N(accounts), account> accounts;
          typedef eosio::multi_index<N(stat), currency_stats> stats;
+         typedef eosio::multi_index<N(blacklist), blacklist> blacklists;
 
          void sub_balance( account_name owner, asset value );
          void add_balance( account_name owner, asset value, account_name ram_payer );
